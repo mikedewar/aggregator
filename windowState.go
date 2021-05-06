@@ -14,12 +14,13 @@ type WindowState struct {
 }
 
 type Event struct {
-	t     time.Time
-	value interface{}
+	T     time.Time
+	Value interface{}
 }
 
-func (e *Event) Less(than Event) bool {
-	return e.t.After(than.t)
+func (e Event) Less(than btree.Item) bool {
+	x := than.(Event)
+	return e.T.After(x.T)
 }
 
 type Window struct {

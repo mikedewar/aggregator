@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/google/btree"
 	"github.com/lovoo/goka"
 )
 
@@ -20,8 +21,8 @@ func NewAppender(in Topic) *Appender {
 	return &Appender{
 		goka.DefineGroup("appender",
 			goka.Input(in.name, in.codec, appenderProcessor),
-			goka.Output("sessions", new(arrayCodec)),
-			goka.Lookup("windowState-table", new(arrayCodec)),
+			goka.Output("sessions", new(btreeCodec)),
+			goka.Lookup("windowState-table", new(btreeCodec)),
 		),
 	}
 
@@ -43,20 +44,19 @@ func appenderProcessor(ctx goka.Context, msg interface{}) {
 
 	historyI := ctx.Lookup("windowState-table", ctx.Key())
 
-	history, ok := historyI.([]int64)
+	history, ok := historyI.(*btree.BTree)
 
 	if !ok {
-		if history == nil {
-			log.Println("no history for key", ctx.Key())
-			history = make([]int64, 0, 1)
-			log.Println("empty history", history)
-		} else {
-			log.Println(historyI)
-			log.Fatal("couldn't cast history to []int64")
-		}
+		log.Println(history)
+		history = btree.New(2)
 	}
 
-	history = append(history, 1)
+	event, ok := msg.(Event)
+	if !ok {
+		log.Fatal("couldn't convert value to event")
+	}
+
+	history.ReplaceOrInsert(event)
 
 	ctx.Emit("sessions", ctx.Key(), history)
 

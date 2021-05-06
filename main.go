@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-
-	"github.com/lovoo/goka/codec"
 )
 
 var (
@@ -21,7 +19,7 @@ func main() {
 	// then emits
 	appender := NewAppender(Topic{
 		name:  "example-stream",
-		codec: new(codec.String),
+		codec: new(eventCodec),
 	})
 	go appender.Run(ctx, brokers)
 
