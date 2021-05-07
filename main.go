@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 )
 
 var (
@@ -9,6 +10,8 @@ var (
 )
 
 func main() {
+
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	ctx := context.Background()
 

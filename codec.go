@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"log"
 
 	"github.com/google/btree"
 )
@@ -22,8 +23,9 @@ type arrayCodec struct{}
 
 func (c *arrayCodec) Encode(value interface{}) ([]byte, error) {
 	// all we're really doing here is checking that the inbound is actually
-	// a []int64 and then we're storing the JSON representation
-	v, ok := value.([]int64)
+	// an array of something and then we're storing the JSON representation.
+	// if the elements aren't json marshallable then this will return an error
+	v, ok := value.([]interface{})
 	if !ok {
 		return nil, errors.New("Failure encodoing array")
 	}
@@ -31,7 +33,7 @@ func (c *arrayCodec) Encode(value interface{}) ([]byte, error) {
 }
 
 func (c *arrayCodec) Decode(data []byte) (interface{}, error) {
-	var v []int64
+	var v []interface{}
 	err := json.Unmarshal(data, &v)
 	return v, err
 }
@@ -50,7 +52,9 @@ func (b *btreeCodec) Encode(value interface{}) ([]byte, error) {
 		i++
 		return true
 	})
-	return nil, nil
+	log.Println(out)
+	log.Println("\n")
+	return json.Marshal(out)
 }
 
 func (b *btreeCodec) Decode(data []byte) (interface{}, error) {
