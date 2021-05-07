@@ -43,12 +43,12 @@ func (s *Appender) Run(ctx context.Context, brokers []string) {
 func appenderProcessor(ctx goka.Context, msg interface{}) {
 
 	// get the existing window
-	historyI := ctx.Lookup("windowState-table", ctx.Key())
-	history, ok := historyI.(*btree.BTree)
+	windowI := ctx.Lookup("windowState-table", ctx.Key())
+	window, ok := windowI.(*btree.BTree)
 
 	// if anything went wrong, let's make a fresh one
 	if !ok {
-		history = btree.New(2)
+		window = btree.New(2)
 	}
 
 	// make sure the msg is the Event that we expect
@@ -58,9 +58,9 @@ func appenderProcessor(ctx goka.Context, msg interface{}) {
 	}
 
 	// insert the new event into the history ensuring that order is correct
-	history.ReplaceOrInsert(event)
+	window.ReplaceOrInsert(event)
 
-	// emit the new, ordered history
-	ctx.Emit("sessions", ctx.Key(), history)
+	// emit the new, ordered window
+	ctx.Emit("sessions", ctx.Key(), window)
 
 }
