@@ -31,5 +31,11 @@ func main() {
 	windowState := NewWindowState()
 	go windowState.Run(ctx, brokers)
 
+	// the featureBuilder consumes the window messages
+	// emitted by the appender and creates a new stream
+	// of aggregates, one per window
+	featureBuilder := NewFeatureBuilder()
+	go featureBuilder.Run(ctx, brokers)
+
 	runView()
 }

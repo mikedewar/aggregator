@@ -88,3 +88,19 @@ func (e *eventCodec) Decode(data []byte) (interface{}, error) {
 	err := json.Unmarshal(data, &v)
 	return v, err
 }
+
+type featureCodec struct{}
+
+func (f *featureCodec) Encode(value interface{}) ([]byte, error) {
+	v, ok := value.(Feature)
+	if !ok {
+		return nil, errors.New("Failure encodoing array")
+	}
+	return json.Marshal(v)
+}
+
+func (f *featureCodec) Decode(data []byte) (interface{}, error) {
+	var v Feature
+	err := json.Unmarshal(data, &v)
+	return v, err
+}

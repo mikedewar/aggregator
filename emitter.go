@@ -18,11 +18,11 @@ func runEmitter() {
 	}
 	defer emitter.Finish()
 	for {
-		time.Sleep(10 * time.Millisecond)
-		key := strconv.Itoa(rand.Intn(1000))
+		time.Sleep(1 * time.Millisecond)
+		key := strconv.Itoa(rand.Intn(10))
 		v := Event{
 			T:     time.Now(),
-			Value: "test value",
+			Value: rand.NormFloat64(),
 		}
 		err = emitter.EmitSync(key, v)
 		if err != nil {

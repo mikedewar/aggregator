@@ -20,6 +20,13 @@ kafka-topics                             \
         --partitions 1                   \
         --topic sessions
 
+kafka-topics                             \
+        --zookeeper localhost:2181       \
+        --create                         \
+        --replication-factor 1           \
+        --partitions 1                   \
+        --topic features
+
 kafka-topics --create --topic example-stream --bootstrap-server localhost:9092
 ```
 
