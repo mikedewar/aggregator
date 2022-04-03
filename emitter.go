@@ -18,8 +18,8 @@ func runEmitter() {
 	}
 	defer emitter.Finish()
 	for {
-		time.Sleep(1 * time.Millisecond)
-		key := strconv.Itoa(rand.Intn(10))
+		time.Sleep(1 * time.Second)
+		key := strconv.Itoa(rand.Intn(1000))
 		v := Event{
 			T:     time.Now(),
 			Value: rand.NormFloat64(),

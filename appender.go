@@ -29,6 +29,7 @@ func NewAppender(in Topic) *Appender {
 }
 
 func (s *Appender) Run(ctx context.Context, brokers []string) {
+	log.Println("running appender")
 	p, err := goka.NewProcessor(brokers, s.g)
 	if err != nil {
 		log.Fatal(err)

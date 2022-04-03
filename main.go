@@ -37,5 +37,14 @@ func main() {
 	featureBuilder := NewFeatureBuilder()
 	go featureBuilder.Run(ctx, brokers)
 
+	// the delayedEmitter waits for a period proportional to
+	// the time between the most recent event in a window and
+	// the time the window is consumed before emitting the window
+	// back onto the sessions topic.
+	delayedEmitter := NewDelayedEmitter()
+	go delayedEmitter.Run(ctx, brokers)
+
+	// the view provides access to the aggregtes for downstream
+	// feature building
 	runView()
 }
