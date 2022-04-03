@@ -42,7 +42,7 @@ func runView() {
 	log.Println("running view")
 
 	view, err := goka.NewView(brokers,
-		"windowState-table",
+		goka.GroupTable("windowState"),
 		new(arrayCodec),
 	)
 	if err != nil {
@@ -59,6 +59,11 @@ func runView() {
 		value, err := view.Get(mux.Vars(r)["key"])
 		if err != nil {
 			log.Fatal(err)
+		}
+
+		if value == nil {
+			w.Write([]byte("value is nil"))
+			return
 		}
 
 		// get the query parameters
@@ -91,7 +96,11 @@ func runView() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		window := value.([]interface{})
+		if value == nil {
+			w.Write([]byte("value is nil"))
+			return
+		}
+		window := value.([]Event)
 		l := len(window)
 		data, err := json.Marshal(l)
 		if err != nil {
