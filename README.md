@@ -6,26 +6,12 @@ Here are the commands I use.
 
 ```
 kafka-topics                            \
-        --zookeeper localhost:2181      \
         --create                        \
         --replication-factor 1          \
         --partitions 10                 \
         --config cleanup.policy=compact \
-        --topic windowState-table
-
-kafka-topics                             \
-        --zookeeper localhost:2181       \
-        --create                         \
-        --replication-factor 1           \
-        --partitions 1                   \
-        --topic sessions
-
-kafka-topics                             \
-        --zookeeper localhost:2181       \
-        --create                         \
-        --replication-factor 1           \
-        --partitions 1                   \
-        --topic features
+        --bootstrap-server localhost:9092 \
+        --topic window-table
 
 kafka-topics --create --topic example-stream --bootstrap-server localhost:9092
 ```

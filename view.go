@@ -42,7 +42,7 @@ func runView() {
 	log.Println("running view")
 
 	view, err := goka.NewView(brokers,
-		goka.GroupTable("windowState"),
+		goka.GroupTable("window"),
 		new(arrayCodec),
 	)
 	if err != nil {
