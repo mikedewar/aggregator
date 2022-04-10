@@ -29,7 +29,11 @@ func main() {
 
 	go runEmitter() // emits one message per second
 
-	go runWindowBuilder(ctx, brokers)
+	done := make(chan bool)
+
+	go runWindowBuilder(ctx, brokers, done)
 
 	runView()
+
+	<-done
 }

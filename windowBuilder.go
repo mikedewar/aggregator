@@ -23,7 +23,7 @@ type Topic struct {
 	codec goka.Codec
 }
 
-func runWindowBuilder(ctx context.Context, brokers []string) {
+func runWindowBuilder(ctx context.Context, brokers []string, done chan bool) {
 	g := goka.DefineGroup("window",
 		goka.Input("example-stream", new(eventCodec), windowBuilder),
 		goka.Persist(new(arrayCodec)),
@@ -32,11 +32,12 @@ func runWindowBuilder(ctx context.Context, brokers []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer close(done)
 	err = p.Run(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("shut down nicely")
+	log.Println("window builder shut down nicely")
 }
 
 func windowBuilder(ctx goka.Context, msg interface{}) {
@@ -44,6 +45,7 @@ func windowBuilder(ctx goka.Context, msg interface{}) {
 	var ok bool
 
 	// get the existing window against this key
+	t := time.Now()
 	windowI := ctx.Value()
 	if windowI == nil {
 		// make a new window
@@ -55,6 +57,7 @@ func windowBuilder(ctx goka.Context, msg interface{}) {
 			ctx.Fail(fmt.Errorf("didn't receive a window from ctx.Value"))
 		}
 	}
+	log.Println("get", time.Since(t), len(window))
 
 	// assert the msg is an Event
 	event, ok := msg.(Event)
@@ -62,10 +65,12 @@ func windowBuilder(ctx goka.Context, msg interface{}) {
 		ctx.Fail(fmt.Errorf("couldn't assert that the received message was of type Event"))
 	}
 
+	t = time.Now()
 	// insert the new event into the history ensuring that order is correct
 	newWindow := append(window, event)
 
 	// emit the new window
 	ctx.SetValue(newWindow)
+	log.Println("set", time.Since(t), len(newWindow))
 
 }
