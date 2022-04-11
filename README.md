@@ -1,23 +1,6 @@
-This is a demo service that builds windows against a stream using Goka. 
+This service builds a stream of aggregated windows, using the key of the
+inbound message to group by. 
 
-To set this up, you need to have Kafka and Zookeeper running, and you need to make three topics. 
+Its aim is to be the simplest possible, tested window buildier. 
 
-Here are the commands I use.
-
-```
-kafka-topics                            \
-        --create                        \
-        --replication-factor 1          \
-        --partitions 10                 \
-        --config cleanup.policy=compact \
-        --bootstrap-server localhost:9092 \
-        --topic window-table
-
-kafka-topics --create --topic example-stream --bootstrap-server localhost:9092
-```
-
-
-![alt text](https://github.com/mikedewar/aggregator/raw/master/diag.png "swimlanes diagram")
-
-
-
+It will fail when the windows become too large for kafka. 
