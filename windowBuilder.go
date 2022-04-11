@@ -45,7 +45,7 @@ func windowBuilder(ctx goka.Context, msg interface{}) {
 	var ok bool
 
 	// get the existing window against this key
-	t := time.Now()
+	//t := time.Now()
 	windowI := ctx.Value()
 	if windowI == nil {
 		// make a new window
@@ -57,7 +57,7 @@ func windowBuilder(ctx goka.Context, msg interface{}) {
 			ctx.Fail(fmt.Errorf("didn't receive a window from ctx.Value"))
 		}
 	}
-	log.Println("get", time.Since(t), len(window))
+	//log.Println("get", time.Since(t), len(window))
 
 	// assert the msg is an Event
 	event, ok := msg.(Event)
@@ -65,12 +65,12 @@ func windowBuilder(ctx goka.Context, msg interface{}) {
 		ctx.Fail(fmt.Errorf("couldn't assert that the received message was of type Event"))
 	}
 
-	t = time.Now()
+	//t = time.Now()
 	// insert the new event into the history ensuring that order is correct
 	newWindow := append(window, event)
 
 	// emit the new window
 	ctx.SetValue(newWindow)
-	log.Println("set", time.Since(t), len(newWindow))
+	//log.Println("set", time.Since(t), len(newWindow))
 
 }
