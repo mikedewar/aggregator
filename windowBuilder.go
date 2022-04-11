@@ -23,12 +23,20 @@ type Topic struct {
 	codec goka.Codec
 }
 
-func runWindowBuilder(ctx context.Context, brokers []string, done chan bool) {
-	g := goka.DefineGroup("window",
-		goka.Input("example-stream", new(eventCodec), windowBuilder),
-		goka.Persist(new(arrayCodec)),
+func createWindowBuilderProcessor(brokers []string, options ...goka.ProcessorOption) (*goka.Processor, error) {
+	return goka.NewProcessor(brokers,
+		goka.DefineGroup("window",
+			goka.Input("events", new(eventCodec), windowBuilder),
+			goka.Persist(new(arrayCodec)),
+		),
+		options...,
 	)
-	p, err := goka.NewProcessor(brokers, g)
+
+}
+
+func runWindowBuilder(ctx context.Context, brokers []string, done chan bool) {
+
+	p, err := createWindowBuilderProcessor(brokers)
 	if err != nil {
 		log.Fatal(err)
 	}
