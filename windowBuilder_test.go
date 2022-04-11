@@ -101,5 +101,53 @@ func TestIncrementalWindowBuild(t *testing.T) {
 		}
 		AssertEqualWindow(t, expected, actual)
 	}
+}
+
+func TestMultipleWindowBuild(t *testing.T) {
+	// instantiate the tester
+	tester := tester.New(t)
+
+	// build the test processor
+	p, err := createWindowBuilderProcessor(nil, goka.WithTester(tester))
+	if err != nil {
+		t.Fatal(err)
+	}
+	input := p.Graph().InputStreams().Topics()[0]
+	table := goka.GroupTable(p.Graph().Group())
+
+	// run the test processor
+	go p.Run(context.Background())
+
+	N := 2000
+	M := 20
+
+	// make M keys
+	expected := make(map[string][]Event)
+	keys := make([]string, M)
+	for i := 0; i < M; i++ {
+		key := uuid.New().String()
+		keys[i] = key
+		w := make([]Event, 0)
+		expected[key] = w
+	}
+
+	for i := 0; i < N; i++ {
+		// pick a random key
+		key := keys[rand.Intn(M)]
+		msg := Event{
+			T:     time.Now(),
+			Value: rand.NormFloat64(),
+		}
+		newWindow := append(expected[key], msg)
+		expected[key] = newWindow
+		tester.Consume(input, key, msg)
+		// assert as we go
+		actualI := tester.TableValue(table, key)
+		actual, ok := actualI.([]Event)
+		if !ok {
+			t.Fatal("could not assert actual was []Event")
+		}
+		AssertEqualWindow(t, expected[key], actual)
+	}
 
 }

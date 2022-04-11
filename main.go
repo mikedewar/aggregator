@@ -18,7 +18,7 @@ func main() {
 		log.Fatalf("error creating topic manager: %v", err)
 	}
 
-	err = tmgr.EnsureStreamExists("example-stream", 10)
+	err = tmgr.EnsureStreamExists("events", 10)
 	if err != nil {
 		log.Fatalf("Error creating sessions: %v", err)
 	}
@@ -26,8 +26,6 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	ctx := context.Background()
-
-	go runEmitter() // emits one message per second
 
 	done := make(chan bool)
 
